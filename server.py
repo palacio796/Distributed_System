@@ -1,6 +1,7 @@
 import socket
 import threading
 import queue
+import csv
 
 
 HEADER = 64
@@ -24,11 +25,21 @@ def send_broadcast_message(msg):
     broadcast_SOCK.sendto(msg.encode(), (BROADCAST_ADDRESS, BROADCAST_PORT))
     broadcast_SOCK.close()
 
+    with open("network_monitor.csv", 'a') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        row = ['Broadcast', 'time', SERVER, BROADCAST_ADDRESS, PORT, BROADCAST_PORT, 'TCP', msg.len(), 'flags']
+        csvwriter.writerows(row)
+
 def send_multicast_message(msg):
     multicast_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     multicast_SOCK.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
     multicast_SOCK.sendto(msg.encode(), (MULTICAST_GROUP, MULTICAST_PORT))
     multicast_SOCK.close()
+
+    with open("network_monitor.csv", 'a') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        row = ['Multicast', 'time', SERVER, MULTICAST_GROUP, PORT, MULTICAST_PORT, 'UDP', msg.len(), 'flags']
+        csvwriter.writerows(row)
 
 
 def handle_client(conn, addr):
@@ -58,6 +69,13 @@ def start():
     master_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     master_server.bind(ADDR)
     master_server.listen(5)
+    filename = "network_monitor.csv"
+    fields = ['Type', 'Time(s)', 'Source_Ip', 'Destination_Ip', 'Source_Port', 'Destination_Port', 'Protocol',
+              'Length (bytes)', 'Flags (hex)']
+
+    with open(filename, 'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(fields)
     print(f"[LISTENING] Master Server is listening on {SERVER}")
     while True:
         conn, addr = master_server.accept()
@@ -66,5 +84,9 @@ def start():
         print(f"[ACTIVE CONNECTIONS] {len(active_connections)}")
 
 
+
+
 if __name__ == "__main__":
     start()
+
+
