@@ -10,7 +10,7 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
-BROADCAST_ADDRESS = '<broadcast>'
+BROADCAST_ADDRESS = '127.0.0.1'
 BROADCAST_PORT = 5002
 MULTICAST_GROUP = '224.1.1.1'
 MULTICAST_PORT = 5000
@@ -25,10 +25,11 @@ def send_broadcast_message(msg):
     broadcast_SOCK.sendto(msg.encode(), (BROADCAST_ADDRESS, BROADCAST_PORT))
     broadcast_SOCK.close()
 
-    with open("network_monitor.csv", 'a') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        row = ['Broadcast', 'time', SERVER, BROADCAST_ADDRESS, PORT, BROADCAST_PORT, 'TCP', msg.len(), 'flags']
-        csvwriter.writerows(row)
+    
+    # with open("network_monitor.csv", 'a') as csvfile:
+    #     csvwriter = csv.writer(csvfile)
+    #     row = ['Broadcast', 'time', SERVER, BROADCAST_ADDRESS, PORT, BROADCAST_PORT, 'TCP', msg.len(), 'flags']
+    #     csvwriter.writerows(row)
 
 def send_multicast_message(msg):
     multicast_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -36,10 +37,10 @@ def send_multicast_message(msg):
     multicast_SOCK.sendto(msg.encode(), (MULTICAST_GROUP, MULTICAST_PORT))
     multicast_SOCK.close()
 
-    with open("network_monitor.csv", 'a') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        row = ['Multicast', 'time', SERVER, MULTICAST_GROUP, PORT, MULTICAST_PORT, 'UDP', msg.len(), 'flags']
-        csvwriter.writerows(row)
+    # with open("network_monitor.csv", 'a') as csvfile:
+    #     csvwriter = csv.writer(csvfile)
+    #     row = ['Multicast', 'time', SERVER, MULTICAST_GROUP, PORT, MULTICAST_PORT, 'UDP', msg.len(), 'flags']
+    #     csvwriter.writerows(row)
 
 
 def handle_client(conn, addr):
@@ -77,6 +78,18 @@ def start():
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(fields)
     print(f"[LISTENING] Master Server is listening on {SERVER}")
+    print("How would you like to communciate?")
+    print("[1] Broadcast protocol")
+    print("[2] Multicast Protocol")
+    option = input()
+    if option == '1':
+        message = input("Enter a messege for broadcast\n")
+        send_broadcast_message(message)
+    elif option == '2':
+        message = input("Enter a messge for multicast\n")
+        send_multicast_message(message)
+    else:
+        print("PLease enter a valid option")
     while True:
         conn, addr = master_server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
@@ -88,5 +101,4 @@ def start():
 
 if __name__ == "__main__":
     start()
-
 
