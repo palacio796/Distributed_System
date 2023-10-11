@@ -1,6 +1,7 @@
 import socket
 import sys
 import threading
+import time
 
 HEADER = 10
 PORT = 5051
@@ -22,7 +23,8 @@ def recv_broadcast_message():
         print(f"[BROADCAST RECEIVED] {data.decode()} from {addr}")
 
 def recv_multicast_message():
-    multi_address = '224.1.1.1'
+    #multi_address = '224.1.1.1'
+    multi_address = '127.0.0.1'
     multi_interface = SERVER
     multicast_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     multicast_SOCK.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -31,7 +33,19 @@ def recv_multicast_message():
     while True:
         data, addr = multicast_SOCK.recvfrom(1024)
         print(f"[MULTICAST RECEIVED] '{data.decode()}' from {addr}")
+        monitor("Multicast", multi_interface, MULTICAST_PORT, multi_address, PORT, "UDP")
 
+def monitor(type, src_ip, src_port, dest_ip, dest_port, protocol, length):
+    timestamp = time.time() * 1000
+    print("Type: ", type)
+    print("Time(ms): ", timestamp)
+    print("Source IP: ", src_ip)
+    print("Destination IP: ", dest_ip)
+    print("Source Port: ", src_port)
+    print("Destination Port: ", dest_port)
+    print("Protocol: ", protocol)
+    print("Length: ", length, "bytes")
+    print("--------------")
 
 
 def start():
