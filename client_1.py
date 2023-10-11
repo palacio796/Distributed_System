@@ -12,10 +12,11 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 
 
-
 def recv_broadcast_message():
+    broadcast_address = '127.0.0.1'
     broadcast_SOCK =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    broadcast_SOCK.bind(ADDR)
+    broadcast_SOCK.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    broadcast_SOCK.bind((broadcast_address, BROADCAST_PORT))
     while True:
         data, addr = broadcast_SOCK.recvfrom(1024)
         print(f"[BROADCAST RECEIVED] {data.decode()} from {addr}")
@@ -29,7 +30,7 @@ def recv_multicast_message():
     multicast_SOCK.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, socket.inet_aton(multi_address) + socket.inet_aton(multi_interface))
     while True:
         data, addr = multicast_SOCK.recvfrom(1024)
-        print(f"[MULTICAST RECEIVED] {data.decode()} from {addr}")
+        print(f"[MULTICAST RECEIVED] '{data.decode()}' from {addr}")
 
 
 
@@ -54,3 +55,4 @@ if __name__ == "__main__":
 
     # Start the client server
     start()
+
