@@ -23,8 +23,8 @@ def recv_broadcast_message():
         print(f"[BROADCAST RECEIVED] {data.decode()} from {addr}")
 
 def recv_multicast_message():
-    #multi_address = '224.1.1.1'
-    multi_address = '127.0.0.1'
+    multi_address = '224.1.1.1'
+    #multi_address = '127.0.0.1'
     multi_interface = SERVER
     multicast_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     multicast_SOCK.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
