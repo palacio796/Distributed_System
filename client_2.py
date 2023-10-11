@@ -10,13 +10,9 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
+broadcast_address = '127.0.0.1'
 
-def recv_broadcast_message():
-    broadcast_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    broadcast_SOCK.bind(ADDR)
-    while True:
-        data, addr = broadcast_SOCK.recvfrom(1024)
-        print(f"[BROADCAST RECEIVED] {data.decode()} from {addr}")
+        
 
 def recv_multicast_message():
     multi_address = '224.1.1.1'
@@ -27,7 +23,7 @@ def recv_multicast_message():
     multicast_SOCK.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, socket.inet_aton(multi_address) + socket.inet_aton(multi_interface))
     while True:
         data, addr = multicast_SOCK.recvfrom(1024)
-        print(f"[MULTICAST RECEIVED] {data.decode()} from {addr}")
+        print(f"[MULTICAST RECEIVED] '{data.decode()}' from {addr}")
 
 def start():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,8 +38,5 @@ def start():
 if __name__ == "__main__":
     multicast_thread = threading.Thread(target=recv_multicast_message)
     multicast_thread.start()
-
-    broadcast_thread = threading.Thread(target=recv_broadcast_message)
-    broadcast_thread.start()
 
     start()

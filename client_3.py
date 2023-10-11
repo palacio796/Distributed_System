@@ -11,12 +11,6 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 
-def recv_broadcast_message():
-    broadcast_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    broadcast_SOCK.bind(ADDR)
-    while True:
-        data, addr = broadcast_SOCK.recvfrom(1024)
-        print(f"[BROADCAST RECEIVED] {data.decode()} from {addr}")
 
 def recv_multicast_message():
     multi_address = '224.1.1.1'
@@ -42,8 +36,5 @@ def start():
 if __name__ == "__main__":
     multicast_thread = threading.Thread(target=recv_multicast_message)
     multicast_thread.start()
-
-    broadcast_thread = threading.Thread(target=recv_broadcast_message)
-    broadcast_thread.start()
 
     start()

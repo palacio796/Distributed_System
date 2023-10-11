@@ -12,8 +12,8 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 
 
+broadcast_address = '127.0.0.1'
 def recv_broadcast_message():
-    broadcast_address = '127.0.0.1'
     broadcast_SOCK =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     broadcast_SOCK.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     broadcast_SOCK.bind((broadcast_address, BROADCAST_PORT))
@@ -55,4 +55,3 @@ if __name__ == "__main__":
 
     # Start the client server
     start()
-
